@@ -4,7 +4,7 @@ MAINTAINER Luis Fernando Gomes <your@luiscoms.com.br>
 
 ENV ERLANG_SOLUTIONS_VERSION 1.0-1
 RUN yum update -y && yum clean all
-RUN yum install -y wget && yum clean all
+RUN yum install -y wget epel-release && yum clean all
 RUN yum install -y http://packages.erlang-solutions.com/erlang-solutions-${ERLANG_SOLUTIONS_VERSION}.noarch.rpm && yum clean all
 RUN yum install -y erlang && yum clean all
 
@@ -26,10 +26,11 @@ ENV RABBITMQ_LOGS=- RABBITMQ_SASL_LOGS=-
 ENV HOME /var/lib/rabbitmq
 
 RUN mkdir -p /var/lib/rabbitmq /etc/rabbitmq \
-	&& chown -R rabbitmq:rabbitmq /var/lib/rabbitmq /etc/rabbitmq \
-	&& chmod 777 /var/lib/rabbitmq /etc/rabbitmq
+	&& chgrp -R 0 /var/lib/rabbitmq /etc/rabbitmq \
+	&& chmod -R g=u /var/lib/rabbitmq /etc/rabbitmq
 
-RUN chown -R rabbitmq:rabbitmq /opt/app-root
+RUN chgrp -R 0 /opt/app-root \
+	&& chmod -R g=u /opt/app-root
 # && \
 	# chown -R rabbitmq:rabbitmq /var/log/rabbitmq/ && \
 	# chown -R rabbitmq:rabbitmq /var/lib/rabbitmq && \
@@ -41,7 +42,7 @@ RUN ls -la /var/lib/rabbitmq/
 
 COPY ./docker-entrypoint.sh /usr/local/bin/
 
-USER "rabbitmq"
+USER 1001
 # CMD "$STI_SCRIPTS_PATH/run"
 # CMD "/docker-entrypoint.sh"
 ENTRYPOINT ["docker-entrypoint.sh"]
