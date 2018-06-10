@@ -42,6 +42,10 @@ RUN ls -la /var/lib/rabbitmq/
 
 COPY ./docker-entrypoint.sh /usr/local/bin/
 
+# Activate management
+RUN /usr/sbin/rabbitmq-plugins enable --offline rabbitmq_management
+EXPOSE 15671 15672
+
 USER 1001
 # CMD "$STI_SCRIPTS_PATH/run"
 # CMD "/docker-entrypoint.sh"
